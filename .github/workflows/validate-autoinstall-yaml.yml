@@ -32,47 +32,5 @@ jobs:
         run: python3 -m pip install --upgrade pip pyyaml
 
       - name: Validate YAML syntax for autoinstall templates
-        shell: bash
-        run: |
-          set -euo pipefail
+        run: python3 scripts/validate_autoinstall_yaml.py
 
-          mapfile -d '' files < <(
-            find . -type f \( \
-              -name 'user-data.yml' -o \
-              -name 'user-data.yaml' -o \
-              -name 'autoinstall*.yml' -o \
-              -name 'autoinstall*.yaml' \
-            \) -print0
-          )
-
-          if [ "${#files[@]}" -eq 0 ]; then
-            echo "No autoinstall template YAML files found."
-            exit 0
-          fi
-
-          echo "Validating ${#files[@]} file(s):"
-          printf ' - %s\n' "${files[@]}"
-
-          python3 - "${files[@]}" <<'PY'
-          import pathlib
-          import sys
-
-          import yaml
-
-
-          has_errors = False
-
-          for file_path in sys.argv[1:]:
-              path = pathlib.Path(file_path)
-              try:
-                  with path.open("r", encoding="utf-8") as handle:
-                      list(yaml.safe_load_all(handle))
-              except yaml.YAMLError as error:
-                  has_errors = True
-                  print(f"::error file={path}::Invalid YAML syntax: {error}")
-
-          if has_errors:
-              sys.exit(1)
-
-          print("All autoinstall template YAML files are valid.")
-          PY
