@@ -48,5 +48,5 @@ jobs:
         run: make -C subiquity install_deps
 
       - name: Validate autoinstall templates with Subiquity official validator
-        run: python3 scripts/validate_autoinstall_subiquity.py --subiquity-dir subiquity
+        run: python3 scripts/validate_autoinstall_subiquity.py --subiquity-dir subiquity -vvv
 
