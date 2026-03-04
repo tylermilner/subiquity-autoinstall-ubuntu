@@ -7,6 +7,8 @@ on:
       - "**/user-data.yaml"
       - "**/autoinstall*.yml"
       - "**/autoinstall*.yaml"
+      - "scripts/validate_autoinstall_yaml.py"
+      - "scripts/validate_autoinstall_subiquity.py"
       - ".github/workflows/validate-autoinstall-yaml.yml"
   pull_request:
     paths:
@@ -14,6 +16,8 @@ on:
       - "**/user-data.yaml"
       - "**/autoinstall*.yml"
       - "**/autoinstall*.yaml"
+      - "scripts/validate_autoinstall_yaml.py"
+      - "scripts/validate_autoinstall_subiquity.py"
       - ".github/workflows/validate-autoinstall-yaml.yml"
   workflow_dispatch:
 
@@ -33,4 +37,16 @@ jobs:
 
       - name: Validate YAML syntax for autoinstall templates
         run: python3 scripts/validate_autoinstall_yaml.py
+
+      - name: Checkout Subiquity source
+        uses: actions/checkout@v4
+        with:
+          repository: canonical/subiquity
+          path: subiquity
+
+      - name: Install Subiquity validator dependencies
+        run: make -C subiquity install_deps
+
+      - name: Validate autoinstall templates with Subiquity official validator
+        run: python3 scripts/validate_autoinstall_subiquity.py --subiquity-dir subiquity
 
