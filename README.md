@@ -1,5 +1,17 @@
 # subiquity-autoinstall-ubuntu
+
 My Subiquity Autoinstall templates for automated Ubuntu installations
+
+Subiquity reference: https://canonical-subiquity.readthedocs-hosted.com/en/latest/reference/autoinstall-reference.html
+
+## Templates
+
+### macbook-pro-13-inch-mid-2010_macos-ubuntu-dual-boot/user-data.yaml
+
+- Target: Ubuntu Desktop 24.04 on MacBookPro7,1 (MacBook Pro 13-inch Mid 2010)
+- Install mode: dual-boot alongside macOS (disk selection remains interactive)
+
+Note: for strict compatibility with Subiquity's validator, `#cloud-config` is kept as the first line of template files.
 
 ## Validation
 

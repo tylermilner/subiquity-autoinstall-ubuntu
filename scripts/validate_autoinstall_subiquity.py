@@ -78,17 +78,37 @@ def validate_files(
     no_expect_cloudconfig: bool,
     verbosity: int,
 ) -> int:
-    has_errors = False
-
-    for file_path in files:
+    def run_validator(file_path: pathlib.Path, expect_cloudconfig: bool) -> subprocess.CompletedProcess[str]:
         command = [sys.executable, str(validator_path)]
-        if no_expect_cloudconfig:
+        if not expect_cloudconfig:
             command.append("--no-expect-cloudconfig")
         command.extend(["-v"] * verbosity)
         command.append(str(file_path))
 
+        return subprocess.run(
+            command,
+            check=False,
+            cwd=validator_working_dir,
+            text=True,
+            capture_output=True,
+        )
+
+    def print_output(result: subprocess.CompletedProcess[str]) -> None:
+        if result.stdout:
+            print(result.stdout, end="" if result.stdout.endswith("\n") else "\n")
+        if result.stderr:
+            print(result.stderr, end="" if result.stderr.endswith("\n") else "\n")
+
+    has_errors = False
+
+    for file_path in files:
         print(f"Running Subiquity validator for: {file_path.as_posix()}")
-        result = subprocess.run(command, check=False, cwd=validator_working_dir)
+        result = run_validator(
+            file_path=file_path,
+            expect_cloudconfig=not no_expect_cloudconfig,
+        )
+        print_output(result)
+
         if result.returncode != 0:
             has_errors = True
             if "GITHUB_ACTIONS" in os.environ:

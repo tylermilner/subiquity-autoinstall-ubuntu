@@ -1,8 +1,3 @@
-# Auto-installation configuration file for Ubuntu Desktop 24.04 on my Macbook Pro 13-inch Mid 2010 (MacBookPro7,1)
-# Assumes dual-boot setup with macOS, so the GUI will still be used to select the target disk for installation
-
-# Autoinstall Subiquity configuration reference:
-# https://canonical-subiquity.readthedocs-hosted.com/en/latest/reference/autoinstall-reference.html
 #cloud-config
 autoinstall:
   version: 1
