@@ -63,9 +63,18 @@ def discover_template_files(root: pathlib.Path) -> list[pathlib.Path]:
     return sorted(unique_paths.values(), key=lambda file_path: file_path.as_posix())
 
 
+def is_within(path: pathlib.Path, parent: pathlib.Path) -> bool:
+    try:
+        path.relative_to(parent)
+        return True
+    except ValueError:
+        return False
+
+
 def validate_files(
     files: list[pathlib.Path],
     validator_path: pathlib.Path,
+    validator_working_dir: pathlib.Path,
     no_expect_cloudconfig: bool,
     verbosity: int,
 ) -> int:
@@ -79,7 +88,7 @@ def validate_files(
         command.append(str(file_path))
 
         print(f"Running Subiquity validator for: {file_path.as_posix()}")
-        result = subprocess.run(command, check=False)
+        result = subprocess.run(command, check=False, cwd=validator_working_dir)
         if result.returncode != 0:
             has_errors = True
             if "GITHUB_ACTIONS" in os.environ:
@@ -107,7 +116,11 @@ def main() -> int:
     if args.files:
         files = [pathlib.Path(file_path).resolve() for file_path in args.files]
     else:
-        files = discover_template_files(root)
+        files = [
+            path
+            for path in discover_template_files(root)
+            if not is_within(path, subiquity_dir)
+        ]
 
     if not files:
         print("No autoinstall template YAML files found.")
@@ -120,6 +133,7 @@ def main() -> int:
     exit_code = validate_files(
         files=files,
         validator_path=validator_path,
+        validator_working_dir=subiquity_dir,
         no_expect_cloudconfig=args.no_expect_cloudconfig,
         verbosity=args.verbosity,
     )
