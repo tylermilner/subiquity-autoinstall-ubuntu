@@ -50,3 +50,5 @@ The official Subiquity validator requires a Subiquity checkout and **Ubuntu** de
 	- `python3 scripts/validate_autoinstall_subiquity.py --subiquity-dir subiquity`
 
 If your template is not wrapped in cloud-config format, pass `--no-expect-cloudconfig`.
+
+When `source.id` is set to a value other than `synthesized` (for example `ubuntu-desktop-minimal`), the wrapper script automatically uses Subiquity's `--legacy` mode up front to avoid [known runtime-validator limitations](https://canonical-subiquity.readthedocs-hosted.com/en/latest/howto/autoinstall-validation.html#validator-limitations).

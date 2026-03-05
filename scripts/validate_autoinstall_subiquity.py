@@ -8,6 +8,8 @@ import pathlib
 import subprocess
 import sys
 
+import yaml
+
 
 DEFAULT_PATTERNS = (
     "**/user-data.yml",
@@ -78,10 +80,16 @@ def validate_files(
     no_expect_cloudconfig: bool,
     verbosity: int,
 ) -> int:
-    def run_validator(file_path: pathlib.Path, expect_cloudconfig: bool) -> subprocess.CompletedProcess[str]:
+    def run_validator(
+        file_path: pathlib.Path,
+        expect_cloudconfig: bool,
+        legacy: bool,
+    ) -> subprocess.CompletedProcess[str]:
         command = [sys.executable, str(validator_path)]
         if not expect_cloudconfig:
             command.append("--no-expect-cloudconfig")
+        if legacy:
+            command.append("--legacy")
         command.extend(["-v"] * verbosity)
         command.append(str(file_path))
 
@@ -99,13 +107,65 @@ def validate_files(
         if result.stderr:
             print(result.stderr, end="" if result.stderr.endswith("\n") else "\n")
 
+    def get_autoinstall_data(file_path: pathlib.Path, expect_cloudconfig: bool) -> dict | None:
+        try:
+            with file_path.open("r", encoding="utf-8") as handle:
+                data = yaml.safe_load(handle)
+        except (OSError, yaml.YAMLError):
+            return None
+
+        if not isinstance(data, dict):
+            return None
+
+        if expect_cloudconfig:
+            autoinstall_data = data.get("autoinstall")
+            return autoinstall_data if isinstance(autoinstall_data, dict) else None
+
+        if "autoinstall" in data and isinstance(data["autoinstall"], dict):
+            return data["autoinstall"]
+
+        return data
+
+    def should_use_legacy(file_path: pathlib.Path, expect_cloudconfig: bool) -> tuple[bool, str | None]:
+        autoinstall_data = get_autoinstall_data(file_path, expect_cloudconfig)
+        if not autoinstall_data:
+            return False, None
+
+        source_data = autoinstall_data.get("source")
+        if not isinstance(source_data, dict):
+            return False, None
+
+        source_id = source_data.get("id")
+        if isinstance(source_id, str) and source_id != "synthesized":
+            reason = (
+                "Detected source.id='"
+                f"{source_id}' "
+                "(default/new Subiquity runtime validator is only compatible with 'synthesized' source id)."
+            )
+            return True, reason
+
+        return False, None
+
     has_errors = False
 
     for file_path in files:
         print(f"Running Subiquity validator for: {file_path.as_posix()}")
+
+        expect_cloudconfig = not no_expect_cloudconfig
+        use_legacy, legacy_reason = should_use_legacy(file_path, expect_cloudconfig)
+        if use_legacy and legacy_reason:
+            print(f"Using --legacy for this file: {legacy_reason}")
+            if "GITHUB_ACTIONS" in os.environ:
+                print(
+                    "::notice file="
+                    f"{file_path.as_posix()}"
+                    "::Using --legacy validation due to non-synthesized source.id."
+                )
+
         result = run_validator(
             file_path=file_path,
-            expect_cloudconfig=not no_expect_cloudconfig,
+            expect_cloudconfig=expect_cloudconfig,
+            legacy=use_legacy,
         )
         print_output(result)
 
