@@ -73,7 +73,6 @@ autoinstall:
         id: partition-ubuntu
         device: disk-vda
         number: 3
-        size: -1
         wipe: superblock
         preserve: true
 
