@@ -21,6 +21,8 @@ This repository includes a GitHub Actions workflow that validates autoinstall te
 - Basic YAML syntax check (local): `python3 scripts/validate_autoinstall_yaml.py`
 - Official Subiquity validator (CI): `scripts/validate-autoinstall-user-data.py` from the Subiquity project
 
+For Desktop templates, Subiquity's runtime validator can fail when resolving `source.id` values (for example `ubuntu-desktop-minimal`) in CI. The wrapper script handles this known limitation by retrying with Subiquity's `--legacy` schema validation only for that specific `Source`/`KeyError` failure mode.
+
 ### Run Subiquity validation locally
 
 The official Subiquity validator requires a Subiquity checkout and Ubuntu dependencies.

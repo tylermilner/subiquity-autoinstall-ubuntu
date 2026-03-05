@@ -78,10 +78,16 @@ def validate_files(
     no_expect_cloudconfig: bool,
     verbosity: int,
 ) -> int:
-    def run_validator(file_path: pathlib.Path, expect_cloudconfig: bool) -> subprocess.CompletedProcess[str]:
+    def run_validator(
+        file_path: pathlib.Path,
+        expect_cloudconfig: bool,
+        legacy: bool = False,
+    ) -> subprocess.CompletedProcess[str]:
         command = [sys.executable, str(validator_path)]
         if not expect_cloudconfig:
             command.append("--no-expect-cloudconfig")
+        if legacy:
+            command.append("--legacy")
         command.extend(["-v"] * verbosity)
         command.append(str(file_path))
 
@@ -99,6 +105,12 @@ def validate_files(
         if result.stderr:
             print(result.stderr, end="" if result.stderr.endswith("\n") else "\n")
 
+    def has_source_catalog_keyerror(output: str) -> bool:
+        return (
+            "subiquity/Source/load_autoinstall_data: FAIL" in output
+            and "KeyError" in output
+        )
+
     has_errors = False
 
     for file_path in files:
@@ -108,6 +120,27 @@ def validate_files(
             expect_cloudconfig=not no_expect_cloudconfig,
         )
         print_output(result)
+
+        combined_output = f"{result.stdout or ''}\n{result.stderr or ''}"
+        if result.returncode != 0 and has_source_catalog_keyerror(combined_output):
+            print(
+                "Detected known Subiquity source-catalog limitation for this "
+                "template. Retrying with --legacy schema validation."
+            )
+            if "GITHUB_ACTIONS" in os.environ:
+                print(
+                    "::warning file="
+                    f"{file_path.as_posix()}"
+                    "::Subiquity runtime validation could not resolve source ID; "
+                    "retrying with --legacy schema validation."
+                )
+
+            result = run_validator(
+                file_path=file_path,
+                expect_cloudconfig=not no_expect_cloudconfig,
+                legacy=True,
+            )
+            print_output(result)
 
         if result.returncode != 0:
             has_errors = True
