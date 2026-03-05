@@ -27,7 +27,7 @@ permissions:
   contents: read
 
 jobs:
-  validate-yaml:
+  yaml-syntax:
     runs-on: ubuntu-latest
 
     steps:
@@ -41,6 +41,14 @@ jobs:
 
       - name: Validate YAML syntax for autoinstall templates
         run: python3 scripts/validate_autoinstall_yaml.py
+
+  subiquity-validation:
+    runs-on: ubuntu-latest
+    needs: yaml-syntax
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
       - name: Checkout Subiquity source
         uses: actions/checkout@v4
