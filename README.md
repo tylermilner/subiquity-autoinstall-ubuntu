@@ -39,7 +39,7 @@ Install local Python dependencies:
 
 ### Run Subiquity validation locally
 
-For Desktop templates, Subiquity's runtime validator can fail when resolving `source.id` values (for example `ubuntu-desktop-minimal`) in CI. The wrapper script handles this known limitation by retrying with Subiquity's `--legacy` schema validation only for that specific `Source`/`KeyError` failure mode.
+The official Subiquity validator requires a Subiquity checkout and Ubuntu dependencies.
 
 The official Subiquity validator requires a Subiquity checkout and **Ubuntu** dependencies.
 
