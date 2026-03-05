@@ -1,6 +1,6 @@
 # subiquity-autoinstall-ubuntu
 
-My Subiquity Autoinstall templates for automated Ubuntu installations
+My [Subiquity Autoinstall](https://canonical-subiquity.readthedocs-hosted.com/en/latest/intro-to-autoinstall.html) templates for automated Ubuntu installations.
 
 ## Templates
 
