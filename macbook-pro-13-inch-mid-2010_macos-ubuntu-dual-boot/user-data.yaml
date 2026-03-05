@@ -16,7 +16,7 @@ autoinstall:
     # Search for available third-party drivers
     search_drivers: true
     # Install minimal desktop environment
-    id: ubuntu-desktop-minimal
+    id: synthesized
 
   # Automatically partition/format the disk
   # NOTE: To use this, make sure to remove 'storage' from the `interactive-sections` above
