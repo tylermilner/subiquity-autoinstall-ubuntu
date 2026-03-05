@@ -18,16 +18,32 @@ Note: for strict compatibility with Subiquity's validator, `#cloud-config` is ke
 This repository includes a GitHub Actions workflow that validates autoinstall templates on every push and pull request.
 
 - Workflow: `.github/workflows/validate-autoinstall-yaml.yml`
-- Basic YAML syntax check (local): `python3 scripts/validate_autoinstall_yaml.py`
+- Basic YAML syntax check (local): `scripts/validate_autoinstall_yaml.py`
 - Official Subiquity validator (CI): `scripts/validate-autoinstall-user-data.py` from the Subiquity project
 
-For Desktop templates, Subiquity's runtime validator can fail when resolving `source.id` values (for example `ubuntu-desktop-minimal`) in CI. The wrapper script handles this known limitation by retrying with Subiquity's `--legacy` schema validation only for that specific `Source`/`KeyError` failure mode.
+### Local Python setup
+
+Install local Python dependencies:
+
+1. `python3 -m venv .venv`
+2. `source .venv/bin/activate`
+3. `python3 -m pip install --upgrade pip`
+4. `python3 -m pip install -r requirements.txt`
+
+### Run YAML validation locally
+
+1. Activate the Python virtual environment if not already active:
+    - `source .venv/bin/activate`
+2. Run YAML validation:
+    - `python3 scripts/validate_autoinstall_yaml.py`
 
 ### Run Subiquity validation locally
 
-The official Subiquity validator requires a Subiquity checkout and Ubuntu dependencies.
+For Desktop templates, Subiquity's runtime validator can fail when resolving `source.id` values (for example `ubuntu-desktop-minimal`) in CI. The wrapper script handles this known limitation by retrying with Subiquity's `--legacy` schema validation only for that specific `Source`/`KeyError` failure mode.
 
-1. Clone Subiquity and install dependencies (Ubuntu/Linux):
+The official Subiquity validator requires a Subiquity checkout and **Ubuntu** dependencies.
+
+1. Clone Subiquity and install dependencies (must be running on **Ubuntu/Linux**):
 	- `git clone https://github.com/canonical/subiquity.git`
 	- `make -C subiquity install_deps`
 2. Run the local wrapper from this repository:

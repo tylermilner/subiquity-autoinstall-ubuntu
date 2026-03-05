@@ -9,6 +9,7 @@ on:
       - "**/autoinstall*.yaml"
       - "scripts/validate_autoinstall_yaml.py"
       - "scripts/validate_autoinstall_subiquity.py"
+      - "requirements.txt"
       - ".github/workflows/validate-autoinstall-yaml.yml"
   pull_request:
     paths:
@@ -18,6 +19,7 @@ on:
       - "**/autoinstall*.yaml"
       - "scripts/validate_autoinstall_yaml.py"
       - "scripts/validate_autoinstall_subiquity.py"
+      - "requirements.txt"
       - ".github/workflows/validate-autoinstall-yaml.yml"
   workflow_dispatch:
 
@@ -32,8 +34,10 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Install YAML parser
-        run: python3 -m pip install --upgrade pip pyyaml
+      - name: Install Python dependencies
+        run: |
+          python3 -m pip install --upgrade pip
+          python3 -m pip install -r requirements.txt
 
       - name: Validate YAML syntax for autoinstall templates
         run: python3 scripts/validate_autoinstall_yaml.py
