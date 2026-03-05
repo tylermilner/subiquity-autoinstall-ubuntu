@@ -1,4 +1,9 @@
 #cloud-config
+
+# Target: Ubuntu Desktop 24.04 on MacBookPro7,1 (MacBook Pro 13-inch Mid 2010)
+# Context: dual-boot alongside macOS (disk selection step remains interactive)
+
+# Autoinstall configuration reference: https://canonical-subiquity.readthedocs-hosted.com/en/latest/reference/autoinstall-reference.html
 autoinstall:
   version: 1
 
