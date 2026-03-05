@@ -1,7 +1,7 @@
 #cloud-config
 
 # Target: Ubuntu Desktop 24.04 on MacBookPro7,1 (MacBook Pro 13-inch Mid 2010)
-# Context: dual-boot alongside macOS (storage is auto-configured to preserve macOS partitions)
+# Context: dual-boot alongside macOS (disk selection step remains interactive)
 
 # Autoinstall configuration reference: https://canonical-subiquity.readthedocs-hosted.com/en/latest/reference/autoinstall-reference.html
 autoinstall:
@@ -10,6 +10,7 @@ autoinstall:
   # Set the sections that should be user-interactive during the installation process
   interactive-sections:
     - identity
+    - storage
 
   # Refresh the installer to ensure it has the latest updates and bug fixes
   # Uses "stable/ubuntu-$REL" stable release channel by default
@@ -22,86 +23,12 @@ autoinstall:
     # Install minimal desktop environment
     id: ubuntu-desktop-minimal
 
-  # Storage configuration for dual-boot with macOS
-  # Uses action-based (curtin) syntax to preserve existing macOS partitions while
-  # reformatting the Ubuntu partition.
-  #
-  # Expected disk layout (verify with `lsblk` or `sudo fdisk -l /dev/vda` from the live installer):
-  #   /dev/vda1 = ~200 MB  = EFI System Partition (VFAT) - shared with macOS
-  #   /dev/vda2 = ~250 GB  = macOS partition (APFS) - DO NOT TOUCH
-  #   /dev/vda3 = ~250 GB  = Ubuntu partition (will be reformatted as ext4)
-  #
-  # IMPORTANT: The partition sizes below MUST match your actual disk layout.
-  #   Run `sudo fdisk -l /dev/vda` from the live installer environment to get exact
-  #   sizes and update the values below accordingly before running the install.
-  #
-  # NOTE: `reset-partition` is only supported with layout-based storage config
-  #   (which wipes the entire disk) and is therefore not compatible with this
-  #   dual-boot setup. To recover/reinstall Ubuntu, boot from USB installation
-  #   media instead.
-  storage:
-    swap:
-      size: 0
-    config:
-      # Disk: preserve the existing GPT partition table
-      - type: disk
-        id: disk-vda
-        ptable: gpt
-        path: /dev/vda
-        preserve: true
-        grub_device: true
-
-      # /dev/vda1: EFI System Partition (~200 MB) - shared between macOS and Ubuntu
-      # GRUB is installed here alongside the macOS bootloader
-      - type: partition
-        id: partition-efi
-        device: disk-vda
-        number: 1
-        flag: boot
-        preserve: true
-        grub_device: true
-
-      # /dev/vda2: macOS partition (~250 GB) - preserved, untouched
-      - type: partition
-        id: partition-macos
-        device: disk-vda
-        number: 2
-        preserve: true
-
-      # /dev/vda3: Ubuntu partition (~250 GB) - existing partition is reformatted
-      - type: partition
-        id: partition-ubuntu
-        device: disk-vda
-        number: 3
-        size: -1
-        wipe: superblock
-        preserve: true
-
-      # Keep the existing EFI filesystem intact (macOS bootloader lives here)
-      - type: format
-        id: format-efi
-        fstype: fat32
-        volume: partition-efi
-        preserve: true
-
-      # Format the Ubuntu partition as ext4
-      - type: format
-        id: format-ubuntu
-        fstype: ext4
-        volume: partition-ubuntu
-        preserve: false
-
-      # Mount the EFI partition
-      - type: mount
-        id: mount-efi
-        device: format-efi
-        path: /boot/efi
-
-      # Mount the Ubuntu root filesystem
-      - type: mount
-        id: mount-ubuntu
-        device: format-ubuntu
-        path: /
+  # Automatically partition/format the disk
+  # NOTE: To use this, make sure to remove 'storage' from the `interactive-sections` above
+  # NOTE: Using this will WIPE THE DISK, so uncomment with caution
+  # storage:
+  #   layout:
+  #     name: lvm
 
   # Automatically configure the initial user for the system
   # NOTE: To use this, make sure to remove 'identity' from the `interactive-sections` above
