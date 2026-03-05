@@ -44,4 +44,4 @@ The official Subiquity validator requires a Subiquity checkout and **Ubuntu** de
 
 If your template is not wrapped in cloud-config format, pass `--no-expect-cloudconfig`.
 
-When `source.id` is set to a value other than `synthesized` (for example `ubuntu-desktop-minimal`), the wrapper script automatically uses Subiquity's `--legacy` mode up front to avoid [known runtime-validator limitations](https://canonical-subiquity.readthedocs-hosted.com/en/latest/howto/autoinstall-validation.html#validator-limitations).
+When `source.id` is set to a value other than `synthesized` (for example `ubuntu-desktop-minimal`), the wrapper script automatically uses Subiquity's `--legacy` mode to avoid [known runtime-validator limitations](https://canonical-subiquity.readthedocs-hosted.com/en/latest/howto/autoinstall-validation.html#validator-limitations). When running in legacy mode, only autoinstall schema validation is performed rather than full Subiquity server instance instantiation/validation.

@@ -140,7 +140,7 @@ def validate_files(
             reason = (
                 "Detected source.id='"
                 f"{source_id}' "
-                "(default/new Subiquity runtime validator is only compatible with source.id of 'synthesized')."
+                "(default/new Subiquity runtime validator is only compatible with source.id='synthesized')."
             )
             return True, reason
 
