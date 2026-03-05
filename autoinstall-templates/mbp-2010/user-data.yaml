@@ -1,6 +1,6 @@
 #cloud-config
 
-# Target: Ubuntu Desktop 24.04 on MacBookPro7,1 (MacBook Pro 13-inch Mid 2010)
+# Target: Ubuntu Desktop 24.04 on Virtual Machine (QEMU/KVM) that has macOS already installed
 # Context: dual-boot alongside macOS (disk selection step remains interactive)
 
 # Autoinstall configuration reference: https://canonical-subiquity.readthedocs-hosted.com/en/latest/reference/autoinstall-reference.html
