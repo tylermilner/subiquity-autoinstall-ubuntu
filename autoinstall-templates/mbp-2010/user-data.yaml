@@ -67,7 +67,7 @@ autoinstall:
     - git
     - curl
     - vim
-    # - python3
+    - uidmap # Required for rootless Docker installation
 
   # Set timezone
   timezone: "America/Chicago"
@@ -96,3 +96,7 @@ autoinstall:
 
     # Install nvm Node.js version manager
     - curtin in-target -- curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.4/install.sh | bash
+
+    # Install Docker and setup rootless mode
+    - curtin in-target -- curl -fsSL https://get.docker.com -o get-docker.sh && sh get-docker.sh
+    - curtin in-target -- dockerd-rootless-setuptool.sh install
