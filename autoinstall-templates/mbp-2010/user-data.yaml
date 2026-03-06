@@ -93,3 +93,6 @@ autoinstall:
 
     # Install uv Python package manager
     - curtin in-target -- curl -LsSf https://astral.sh/uv/install.sh | sh
+
+    # Install nvm Node.js version manager
+    - curtin in-target -- curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.4/install.sh | bash
