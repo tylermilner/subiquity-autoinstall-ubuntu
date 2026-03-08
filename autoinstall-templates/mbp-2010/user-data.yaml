@@ -98,5 +98,5 @@ autoinstall:
     - curtin in-target -- curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.4/install.sh | bash
 
     # Install Docker and setup rootless mode
-    - curtin in-target -- curl -fsSL https://get.docker.com -o get-docker.sh && sh get-docker.sh
+    - curtin in-target -- curl -fsSL https://get.docker.com -o get-docker.sh | sh
     - curtin in-target -- dockerd-rootless-setuptool.sh install
