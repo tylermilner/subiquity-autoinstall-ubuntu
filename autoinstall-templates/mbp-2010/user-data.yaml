@@ -91,3 +91,16 @@ autoinstall:
       's/GRUB_CMDLINE_LINUX_DEFAULT=".*/GRUB_CMDLINE_LINUX_DEFAULT=""/'
     - curtin in-target -- update-grub
 
+  user-data:
+    package_update: true
+    package_upgrade: true
+
+    # Install ansible via cloud-init's ansible module
+    packages:
+      - ansible
+
+    # Configure ansible to pull playbooks on first boot
+    ansible:
+      pull:
+        - url: "https://github.com/tylermilner/ansible-playbooks.git"
+          playbook: "mbp-2010-ubuntu.yml"
