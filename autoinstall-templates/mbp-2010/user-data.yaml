@@ -103,4 +103,5 @@ autoinstall:
     ansible:
       pull:
         - url: "https://github.com/tylermilner/ansible-playbooks.git"
-          playbook: "mbp-2010-ubuntu.yml"
+          playbook_names:
+            - "mbp-2010-ubuntu.yml"
