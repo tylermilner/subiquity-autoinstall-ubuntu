@@ -88,15 +88,3 @@ autoinstall:
       's/GRUB_CMDLINE_LINUX_DEFAULT=".*/GRUB_CMDLINE_LINUX_DEFAULT=""/'
     - curtin in-target -- update-grub
 
-    # Update apt sources and install any available updates to ensure the system is fully up to date before first boot
-    - curtin in-target -- apt update && apt upgrade -y
-
-    # Install uv Python package manager
-    - curtin in-target -- curl -LsSf https://astral.sh/uv/install.sh | sh
-
-    # Install nvm Node.js version manager
-    - curtin in-target -- curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.4/install.sh | bash
-
-    # Install Docker and setup rootless mode
-    - curtin in-target -- curl -fsSL https://get.docker.com -o get-docker.sh | sh
-    - curtin in-target -- dockerd-rootless-setuptool.sh install
