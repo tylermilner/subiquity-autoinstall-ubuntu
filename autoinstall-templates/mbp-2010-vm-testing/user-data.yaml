@@ -88,14 +88,15 @@ autoinstall:
       's/GRUB_CMDLINE_LINUX_DEFAULT=".*/GRUB_CMDLINE_LINUX_DEFAULT=""/'
     - curtin in-target -- update-grub
 
-  # user-data:
-  #   write_files:
-  #    - path: /opt/payload_script.sh
-  #      permissions: '0755'
-  #      content: |
-  #         #!/bin/bash         
-  #         echo "user-data script is running"
-  #         echo "user-data script complete"
-  #   runcmd:
-  #     - cd /opt
-  #     - ./payload_script.sh >> /var/log/payload.log
+  user-data:
+    write_files:
+     - path: /opt/payload_script.sh
+       permissions: '0755'
+       content: |
+          #!/bin/bash         
+          echo "user-data script is running"
+          echo "Current time: $(date)"
+          echo "user-data script complete"
+    runcmd:
+      - cd /opt
+      - ./payload_script.sh >> /var/log/payload.log
