@@ -94,16 +94,8 @@ autoinstall:
        permissions: '0755'
        content: |
           #!/bin/bash         
-
-          # Calculate the end time, 1 minute from now
-          end_time=$((SECONDS + 60))  # 60 seconds
-
-          while [ $SECONDS -lt $end_time ]; do
-              printf "Payload installation in progress [%s] %s\n" "$(date +'%T')"
-              sleep 10
-          done
-
-          echo "Installation complete"
+          echo "user-data script is running"
+          echo "user-data script complete"
     runcmd:
       - cd /opt
       - ./payload_script.sh >> /var/log/payload.log
