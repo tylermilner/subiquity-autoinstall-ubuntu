@@ -95,7 +95,7 @@ autoinstall:
     # Configure ansible to pull playbooks on first boot
     ansible:
       package_name:
-        - ansible-core
+        - "ansible-core"
       install_method: distro
       pull:
         - url: "https://github.com/tylermilner/ansible-playbooks.git"
