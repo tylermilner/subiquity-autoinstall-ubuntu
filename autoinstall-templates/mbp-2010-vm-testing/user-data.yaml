@@ -91,6 +91,8 @@ autoinstall:
   user-data:
     package_update: true
     package_upgrade: true
+    packages:
+      - git # Make sure git is installed for ansible pull to work
 
     # Configure ansible to pull playbooks on first boot
     ansible:
